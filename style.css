@@ -1,0 +1,707 @@
+/* ==========================================================================
+   KUROMI'S DIARY - style.css
+   One shared stylesheet used by all five pages.
+
+   TABLE OF CONTENTS
+   1.  Color variables and reset
+   2.  Base styles (body, headings, links, images)
+   3.  Floating background decorations
+   4.  Header and navigation menu
+   5.  Buttons (the "explosive" effect)
+   6.  Main content area and cards
+   7.  Home page (hero, CSS-drawn Kuromi, ticker, music player, previews)
+   8.  About page (profile layout and Spotify-style playlist)
+   9.  Gallery page (polaroid photo grid)
+   10. Blog page (posts and sidebar)
+   11. Contact page (social buttons and form)
+   12. Footer
+   13. Responsive design (media queries)
+   14. Accessibility
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. COLOR VARIABLES AND RESET
+   Change a color here and it updates the whole website.
+   ========================================================================== */
+:root {
+  --night: #14061f;   /* near-black purple: backgrounds, borders, shadows */
+  --grape: #6a2c91;   /* Kuromi purple: header, footer, headings */
+  --pink:  #ff3d9a;   /* hot pink: accents, hover effects */
+  --candy: #ffc2e2;   /* light pink: soft text and highlights */
+  --bone:  #fff7fb;   /* off-white: text on dark, card backgrounds */
+  --ink:   #2a0d3d;   /* dark purple: text on light cards */
+}
+
+/* Remove default browser spacing and make width calculations simpler */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ==========================================================================
+   2. BASE STYLES
+   ========================================================================== */
+body {
+  font-family: "Quicksand", Verdana, sans-serif;  /* main font + fallbacks */
+  color: var(--bone);
+  line-height: 1.7;                               /* easier reading */
+
+  /* Background: a pink glow on top of a diagonal striped pattern */
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 61, 154, 0.25) 0 8%, transparent 9%),
+    repeating-linear-gradient(45deg, var(--night) 0 28px, #1d0a2e 28px 56px);
+  background-attachment: fixed;                   /* background stays while scrolling */
+}
+
+/* All headings use the cute display font */
+h1, h2, h3 {
+  font-family: "Chewy", "Comic Sans MS", cursive;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+a {
+  color: var(--candy);
+}
+
+/* Images never overflow their container */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* .wrap keeps content centered with a maximum width */
+.wrap {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+}
+
+
+/* ==========================================================================
+   3. FLOATING BACKGROUND DECORATIONS
+   Emoji that slowly float upward (pure CSS animation, no JavaScript).
+   ========================================================================== */
+.floaters {
+  position: fixed;          /* stays on screen while scrolling */
+  inset: 0;                 /* cover the whole screen */
+  overflow: hidden;
+  pointer-events: none;     /* clicks pass through to the page */
+  z-index: 0;               /* behind the content */
+}
+
+.floaters span {
+  position: absolute;
+  bottom: -60px;            /* start below the screen */
+  font-size: 2rem;
+  opacity: 0.5;
+  animation: rise 14s linear infinite;
+}
+
+/* Each emoji gets its own horizontal position and start delay */
+.floaters span:nth-child(1) { left: 8%; }
+.floaters span:nth-child(2) { left: 28%; animation-delay: 3s; }
+.floaters span:nth-child(3) { left: 52%; animation-delay: 6s; }
+.floaters span:nth-child(4) { left: 74%; animation-delay: 2s; }
+.floaters span:nth-child(5) { left: 92%; animation-delay: 8s; }
+
+/* Move up past the top of the screen while spinning once */
+@keyframes rise {
+  to { transform: translateY(-115vh) rotate(360deg); }
+}
+
+
+/* ==========================================================================
+   4. HEADER AND NAVIGATION MENU
+   ========================================================================== */
+header {
+  position: relative;
+  z-index: 2;
+  padding: 1.2rem 0 2.6rem;
+  text-align: center;
+  background: var(--grape);
+  border-bottom: 6px solid var(--pink);
+
+  /* Zigzag "jester hat" edge along the bottom, made with a CSS mask */
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 34px 100%;
+          mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 34px 100%;
+}
+
+/* The blog title with a layered 3D-style shadow */
+.logo {
+  font-size: clamp(2rem, 6vw, 3.6rem);   /* scales with screen size */
+  color: var(--bone);
+  text-shadow: 3px 3px 0 var(--night), 6px 6px 0 var(--pink);
+}
+
+/* Navigation menu: a row of buttons that wraps on small screens */
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+  list-style: none;
+}
+
+/* Highlight the link of the page you are currently on */
+nav a.here {
+  background: var(--night);
+  border-color: var(--candy);
+}
+
+
+/* ==========================================================================
+   5. BUTTONS
+   .btn and the nav links share one "explosive" style.
+   Hover: jumps up, tilts, grows, wiggles, glows, and shows a 💥.
+   Click: presses down like a real button.
+   ========================================================================== */
+.btn,
+nav a {
+  position: relative;                 /* lets the 💥 be positioned on it */
+  display: inline-block;
+  padding: 0.55rem 1.3rem;
+  font-family: "Chewy", cursive;
+  font-size: 1.15rem;
+  color: var(--bone);
+  text-decoration: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--pink), var(--grape));
+  border: 3px solid var(--night);
+  border-radius: 999px;               /* pill shape */
+  box-shadow: 4px 4px 0 var(--night); /* hard "sticker" shadow */
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
+
+/* Hover effect */
+.btn:hover,
+nav a:hover {
+  background: linear-gradient(135deg, var(--grape), var(--pink));  /* colors swap */
+  box-shadow: 8px 8px 0 var(--night), 0 0 22px var(--pink);        /* pink glow */
+  transform: translate(-2px, -4px) rotate(-4deg) scale(1.12);
+  animation: wiggle 0.4s ease 2;                                   /* wiggle twice */
+}
+
+/* Click effect: the button is pushed down */
+.btn:active,
+nav a:active {
+  box-shadow: 0 0 0 var(--night);
+  transform: translate(3px, 3px);
+}
+
+/* The hidden 💥 explosion, revealed on hover */
+.btn::after,
+nav a::after {
+  content: "💥";
+  position: absolute;
+  top: -16px;
+  right: -8px;
+  font-size: 1.4rem;
+  opacity: 0;
+  transform: scale(0) rotate(-40deg);
+  transition: 0.25s;
+}
+
+.btn:hover::after,
+nav a:hover::after {
+  opacity: 1;
+  transform: scale(1) rotate(15deg);
+}
+
+/* Side-to-side shake used on hover */
+@keyframes wiggle {
+  25% { transform: rotate(5deg) scale(1.12); }
+  75% { transform: rotate(-7deg) scale(1.12); }
+}
+
+
+/* ==========================================================================
+   6. MAIN CONTENT AREA AND CARDS
+   ========================================================================== */
+main {
+  position: relative;
+  z-index: 1;               /* above the floating emoji */
+  padding: 2.5rem 0;
+}
+
+/* A card is a light "sticker" box that holds a section of content */
+.card {
+  margin-bottom: 2rem;
+  padding: 1.6rem;
+  color: var(--ink);
+  background: rgba(255, 247, 251, 0.96);
+  border: 4px solid var(--night);
+  border-radius: 26px 6px 26px 6px;     /* uneven corners for a unique shape */
+  box-shadow: 8px 8px 0 var(--pink);
+}
+
+.card h2 {
+  font-size: 2rem;
+  color: var(--grape);
+}
+
+.card h3 {
+  font-size: 1.4rem;
+  color: var(--pink);
+}
+
+/* Horizontal rule styled as a striped ribbon */
+hr {
+  height: 10px;
+  margin: 1.6rem 0;
+  border: 0;
+  border-radius: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--pink) 0 14px,
+    var(--night) 14px 28px,
+    var(--grape) 28px 42px
+  );
+}
+
+/* Pink scrolling message bar below the header */
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: "Chewy", cursive;
+  font-size: 1.2rem;
+  color: var(--night);
+  background: var(--pink);
+  border-block: 4px solid var(--night);
+}
+
+.ticker span {
+  display: inline-block;
+  padding-left: 100%;                    /* start just off the right edge */
+  animation: scroll 20s linear infinite;
+}
+
+@keyframes scroll {
+  to { transform: translateX(-100%); }   /* slide fully to the left */
+}
+
+
+/* ==========================================================================
+   7. HOME PAGE
+   ========================================================================== */
+
+/* --- Hero section: text on the left, photo on the right --- */
+.hero {
+  display: flex;
+  flex-wrap: wrap;                       /* photo drops below on small screens */
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero .text {
+  flex: 1 1 320px;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  line-height: 1.1;
+  color: var(--grape);
+}
+
+/* Hero photo: blob-shaped and gently floating up and down */
+.hero img.pic {
+  flex: 0 1 330px;
+  border: 6px solid var(--night);
+  border-radius: 50% 50% 40% 60% / 55% 45% 55% 45%;
+  box-shadow: 8px 8px 0 var(--pink);
+  animation: bob 4s ease-in-out infinite;
+}
+
+@keyframes bob {
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+
+/* --- Background music player box --- */
+.player {
+  margin-top: 1rem;
+  padding: 1rem;
+  color: var(--bone);
+  background: var(--night);
+  border: 3px dashed var(--pink);
+  border-radius: 18px;
+}
+
+.player audio {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* --- Blog preview cards on the home page --- */
+.previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));  /* as many columns as fit */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.previews a {
+  display: block;
+  padding: 1rem;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--candy);
+  border: 3px solid var(--night);
+  border-radius: 16px;
+  transition: 0.25s;
+}
+
+.previews a:hover {
+  box-shadow: 6px 6px 0 var(--grape);
+  transform: rotate(-3deg) translateY(-6px);
+}
+
+.previews strong {
+  font-family: "Chewy", cursive;
+  font-size: 1.3rem;
+  color: var(--grape);
+}
+
+
+/* ==========================================================================
+   8. ABOUT PAGE
+   ========================================================================== */
+
+/* Two columns: photo (260px) + text (the rest) */
+.about-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.6rem;
+  align-items: start;
+}
+
+.about-grid img {
+  border: 5px solid var(--night);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--pink);
+  transform: rotate(-3deg);
+}
+
+/* --- Spotify-style playlist box (dark theme with pink border) --- */
+.spot {
+  padding: 1.4rem;
+  color: var(--bone);
+  background: #1a0a28;
+  border: 4px solid var(--pink);
+  border-radius: 22px;
+}
+
+.spot h2 {
+  color: var(--candy);
+}
+
+.tracks {
+  margin: 1rem 0;
+  list-style: none;
+}
+
+/* One song row: number + title + artist */
+.tracks li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  transition: background 0.25s;
+}
+
+.tracks li:hover {
+  background: rgba(255, 61, 154, 0.25);   /* row lights up on hover */
+}
+
+.tracks .no {
+  width: 1.6rem;
+  text-align: center;
+  color: var(--candy);
+}
+
+.tracks small {                            /* artist name */
+  display: block;
+  color: #c9a7de;
+}
+
+.spot iframe {                             /* embedded Spotify player */
+  width: 100%;
+  margin-top: 0.8rem;
+  border: 0;
+  border-radius: 14px;
+}
+
+
+/* ==========================================================================
+   9. GALLERY PAGE
+   ========================================================================== */
+
+/* Row of jump buttons at the top of the gallery */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-bottom: 2rem;
+}
+
+/* --- Blog-to-gallery connection (no JavaScript needed) ---
+   When a link like gallery.html#friends is clicked, the section with
+   id="friends" becomes the ":target". We hide every gallery section and
+   show only the targeted one. */
+.gallery-set {
+  display: none;
+}
+
+.gallery-set:target {
+  display: block;
+}
+
+/* If nothing was clicked yet (plain gallery.html), show all sections.
+   :has() checks that none of the sections is currently targeted. */
+.gallery:not(:has(:target)) .gallery-set {
+  display: block;
+}
+
+/* Photo grid: columns are at least 190px wide and fill the available space */
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1.4rem;
+  margin-top: 1rem;
+}
+
+/* Each photo looks like a polaroid */
+.photos figure {
+  padding: 0.6rem 0.6rem 1rem;
+  text-align: center;
+  color: var(--ink);
+  background: var(--bone);
+  border: 3px solid var(--night);
+  box-shadow: 5px 5px 0 var(--grape);
+  transition: transform 0.25s;
+}
+
+/* Tilt photos left and right in turns */
+.photos figure:nth-child(odd)  { transform: rotate(-2deg); }
+.photos figure:nth-child(even) { transform: rotate(2deg); }
+
+/* Hover: straighten, grow, and show a pink shadow */
+.photos figure:hover {
+  z-index: 3;
+  box-shadow: 8px 8px 0 var(--pink);
+  transform: rotate(0) scale(1.08);
+}
+
+/* Square photos, cropped neatly to fit */
+.photos img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.photos figcaption {
+  margin-top: 0.4rem;
+  font-family: "Chewy", cursive;
+}
+
+
+/* ==========================================================================
+   10. BLOG PAGE
+   ========================================================================== */
+
+/* Posts on the left, sidebar (250px) on the right */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* One blog post: photo beside text */
+.post {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.4rem;
+}
+
+/* Every second post flips sides for a zigzag look */
+.post:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+/* Taped-on snapshot */
+.post .snap {
+  position: relative;
+  flex: 0 0 240px;
+  padding: 0.6rem;
+  background: var(--bone);
+  border: 3px solid var(--night);
+  box-shadow: 5px 5px 0 var(--grape);
+  transform: rotate(-3deg);
+}
+
+/* Pink piece of tape on top of the snapshot */
+.post .snap::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 35%;
+  width: 90px;
+  height: 26px;
+  background: rgba(255, 61, 154, 0.7);
+  transform: rotate(4deg);
+}
+
+/* Date label (pill shape) */
+.post time {
+  display: inline-block;
+  padding: 0 0.9rem;
+  font-size: 0.9rem;
+  color: var(--candy);
+  background: var(--night);
+  border-radius: 999px;
+}
+
+blockquote {
+  margin: 0.8rem 0;
+  padding-left: 1rem;
+  font-style: italic;
+  border-left: 6px solid var(--pink);
+}
+
+/* Sidebar list uses skulls instead of bullets */
+.side ul {
+  list-style: none;
+}
+
+.side li::before {
+  content: "💀 ";
+}
+
+.player {
+  margin-top: 1rem;
+  padding: 1rem;
+  color: var(--bone);
+  background: var(--night);
+  border: 3px dashed var(--pink);
+  border-radius: 18px;
+}
+
+.player audio {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+
+/* ==========================================================================
+   11. CONTACT PAGE
+   ========================================================================== */
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+form {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+input,
+textarea {
+  padding: 0.7rem 1rem;
+  font: inherit;
+  background: var(--bone);
+  border: 3px solid var(--night);
+  border-radius: 14px;
+  transition: 0.25s;
+}
+
+/* Pink glow when a field is selected */
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--pink);
+  box-shadow: 0 0 0 4px var(--candy);
+}
+
+
+/* ==========================================================================
+   12. FOOTER
+   ========================================================================== */
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 1.6rem;
+  text-align: center;
+  font-family: "Chewy", cursive;
+  background: var(--grape);
+  border-top: 6px solid var(--pink);
+}
+
+
+/* ==========================================================================
+   13. RESPONSIVE DESIGN (media queries)
+   ========================================================================== */
+
+/* Tablets and phones: switch two-column layouts to one column */
+@media (max-width: 800px) {
+  .about-grid,
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .post,
+  .post:nth-child(even) {
+    flex-direction: column;
+  }
+
+  .post .snap {
+    flex-basis: auto;
+    width: min(280px, 100%);
+  }
+
+  .hero img.pic {
+    margin: 0 auto;
+  }
+}
+
+/* Small phones: smaller menu buttons and 2 photos per row */
+@media (max-width: 480px) {
+  nav a {
+    padding: 0.45rem 0.9rem;
+    font-size: 1rem;
+  }
+
+  .photos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+}
+
+
+/* ==========================================================================
+   14. ACCESSIBILITY
+   ========================================================================== */
+
+/* Clear outline when navigating with the keyboard */
+a:focus-visible,
+.btn:focus-visible {
+  outline: 4px solid var(--candy);
+  outline-offset: 3px;
+}
+
+/* Turn off animations for people who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
